@@ -64,21 +64,23 @@ def job_sectors():
     job_data = pd.DataFrame(list(db1.job_data.find()))
     job_data = job_data.loc[job_data['Country Name'].isin(gdp_country)]
     job_agri = job_data.loc[job_data['Series Code']=='SL.AGR.EMPL.ZS',['2016','Country Name']]
-    job_agri = job_agri.rename(columns = {'2016':'agriculture'})
+    job_agri = job_agri.rename(columns = {'2016':'Agriculture'})
     job_industry= job_data.loc[job_data['Series Code']=='SL.IND.EMPL.ZS',['2016','Country Name']]
-    job_industry = job_industry.rename(columns = {'2016':'industry'})
+    job_industry = job_industry.rename(columns = {'2016':'Industry'})
     job_service = job_data.loc[job_data['Series Code']=='SL.SRV.EMPL.ZS',['2016','Country Name']]
-    job_service = job_service.rename(columns = {'2016':'service'})
+    job_service = job_service.rename(columns = {'2016':'Service'})
     jobs = pd.merge(job_agri,job_industry,on = 'Country Name')
     jobs = jobs.merge(job_service,on= 'Country Name')
-    job_by_sector = [{"country_name":jobs.loc[:,'Country Name'].values.tolist(),
-           "Agriculture":jobs.loc[:,'agriculture'].values.tolist(),
-           "Industry":jobs.loc[:,'industry'].values.tolist(),
-            "Service":jobs.loc[:,'service'].values.tolist(),   
-          }]
+    jobs = jobs.rename(columns = {'Country Name':'country_name'})
+    job_by_sector_dict  = jobs.to_dict('records')
+    ##job_by_sector = [{"country_name":jobs.loc[:,'Country Name'].values.tolist(),
+          ## "Agriculture":jobs.loc[:,'agriculture'].values.tolist(),
+           ##"Industry":jobs.loc[:,'industry'].values.tolist(),
+            ##"Service":jobs.loc[:,'service'].values.tolist(),   
+         ## }]
     
-    print(jsonify(job_by_sector))
-    return (jsonify(job_by_sector))
+    print(jsonify(job_by_sector_dict))
+    return (jsonify(job_by_sector_dict))
 
 
 @app.route("/job_sectors_growing_countries")
@@ -94,19 +96,17 @@ def job_sectors_growing_countries():
     job_data = pd.DataFrame(list(db1.job_data.find()))
     job_data = job_data.loc[job_data['Country Name'].isin(gdp_country)]
     job_agri = job_data.loc[job_data['Series Code']=='SL.AGR.EMPL.ZS',['2016','Country Name']]
-    job_agri = job_agri.rename(columns = {'2016':'agriculture'})
+    job_agri = job_agri.rename(columns = {'2016':'Agriculture'})
     job_industry= job_data.loc[job_data['Series Code']=='SL.IND.EMPL.ZS',['2016','Country Name']]
-    job_industry = job_industry.rename(columns = {'2016':'industry'})
+    job_industry = job_industry.rename(columns = {'2016':'Industry'})
     job_service = job_data.loc[job_data['Series Code']=='SL.SRV.EMPL.ZS',['2016','Country Name']]
-    job_service = job_service.rename(columns = {'2016':'service'})
+    job_service = job_service.rename(columns = {'2016':'Service'})
     jobs = pd.merge(job_agri,job_industry,on = 'Country Name')
     jobs = jobs.merge(job_service,on= 'Country Name')
-    job_by_sector = [{"country_name":jobs.loc[:,'Country Name'].values.tolist(),
-           "Agriculture":jobs.loc[:,'agriculture'].values.tolist(),
-           "Industry":jobs.loc[:,'industry'].values.tolist(),
-            "Service":jobs.loc[:,'service'].values.tolist(),   
-          }]
-    return jsonify(job_by_sector)
+    jobs = jobs.rename(columns = {'Country Name':'country_name'})
+    job_by_sector_dict  = jobs.to_dict('records')
+    
+    return jsonify(job_by_sector_dict)
     
 if __name__ == "__main__":
     app.run(debug=True)
